@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset=utf-8>
+            <title>My first three.js app</title>
+            <style>
+                body { margin: 0; }
+                canvas { width: 100%; height: 100% }
+                </style>
+            </head>
+    <body>
+        <script src="../three/build/three.js"></script>
+
+    		<script type="x-shader/x-vertex" id="vertexShader">
+          uniform float time;
+          uniform int noWawes;
+
+          const float pi = 3.14159;
+          const float amplitude = 0.005;
+          const float wavelength = 0.5 * pi;
+          const float speed = 0.5;
+          const vec2 direction = vec2(1.0, 0.5);
+          const float steepness = 2.0;
+          const float wind_variation = 0.2;
+
+          varying vec3 nor;
+          varying vec3 pos;
+
+    			void main() {
+
+              pos = (modelMatrix * vec4(position, 1.)).xyz;
+              pos.y = 0.;
+              nor = vec3( 0., 1., 0. );
+
+              // Offset position
+              for (int i = 0; i < 2; ++i)
+              {
+                vec2 dir = direction;
+                float frequency = 2.0 * pi / wavelength;
+                float phase = speed * frequency;
+                float theta = dot(dir, pos.xz);
+                float a = theta * frequency + time * phase;
+                float sin_a = sin(a);
+                float cos_a = cos(a);
+                pos.y += amplitude * sin_a;
+                pos.x += steepness * amplitude * dir.x * cos_a;
+                pos.z += steepness * amplitude * dir.y * cos_a;
+
+                nor.y -= steepness * frequency * amplitude * sin_a;
+                nor.x -= dir.x * frequency * amplitude * cos_a;
+                nor.z -= dir.y * frequency * amplitude * cos_a;
+              }
+
+              gl_Position = projectionMatrix * viewMatrix * vec4(pos, 1.);
+
+    			}
+
+    		</script>
+
+    		<script type="x-shader/x-fragment" id="fragmentShader">
+
+          varying vec3 nor;
+          varying vec3 pos;
+
+    			void main() {
+
+            float d = dot(normalize(cameraPosition - pos), nor);
+    				gl_FragColor.rgb = vec3( d, d, d );
+    				gl_FragColor.a = 1.0;
+    			}
+
+    		</script>
+        <script>
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+
+            var geometry = new THREE.PlaneGeometry(10, 10, 100, 100);
+            var material = new THREE.ShaderMaterial( {
+                      uniforms: {
+                        time: { value: 0.1 },
+                        noWawes: new THREE.Uniform(new Number(1))
+                      },
+            					vertexShader: document.getElementById( 'vertexShader' ).textContent,
+            					fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+            				} );
+
+            var water = new THREE.Mesh( geometry, material );
+            water.rotation.x -= 0.5 * Math.PI;
+            scene.add( water );
+
+            camera.position.z = 8;
+            camera.position.y = 2;
+
+            animate();
+
+            var lastTime = new Date().getTime();
+            function animate()
+            {
+                requestAnimationFrame( animate );
+                var currentTime = (new Date().getTime() - lastTime) / 1000;
+                material.uniforms.time.value = currentTime;
+                renderer.render( scene, camera );
+            }
+        </script>
+    </body>
+</html>
