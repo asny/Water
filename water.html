@@ -19,7 +19,7 @@
           const float amplitude = 0.005;
           const float wavelength = 0.5 * pi;
           const float speed = 0.5;
-          const vec2 direction = vec2(1.0, 0.5);
+          const vec2 wind_direction = normalize(vec2(1.0, 0.5));
           const float steepness = 2.0;
           const float wind_variation = 0.2;
 
@@ -32,10 +32,19 @@
               pos.y = 0.;
               nor = vec3( 0., 1., 0. );
 
+              float var[2];
+              var[0] = 0.83;
+              var[1] = 0.55;
+              float spe[2];
+              spe[0] = 0.13 * pi;
+              spe[1] = -0.25 * pi;
               // Offset position
               for (int i = 0; i < 2; ++i)
               {
-                vec2 dir = direction;
+                vec2 ortho_wind_dir = vec2(-wind_direction.y, wind_direction.x);
+
+                vec2 dir = normalize(wind_direction
+                  + ortho_wind_dir * wind_variation * var[i] * sin(spe[i]));
                 float frequency = 2.0 * pi / wavelength;
                 float phase = speed * frequency;
                 float theta = dot(dir, pos.xz);
