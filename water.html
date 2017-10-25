@@ -73,7 +73,7 @@
 
     			void main() {
 
-            float d = dot(normalize(cameraPosition - pos), nor);
+            float d = 0.25 + 0.75 * dot(normalize(cameraPosition - pos), nor);
     				gl_FragColor.rgb = vec3( d, d, d );
     				gl_FragColor.a = 1.0;
     			}
@@ -87,7 +87,7 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
-            var geometry = new THREE.PlaneGeometry(10, 10, 100, 100);
+            var geometry = new THREE.PlaneGeometry(48, 48, 100, 100);
             var material = new THREE.ShaderMaterial( {
                       uniforms: {
                         time: { value: 0.1 },
@@ -101,9 +101,6 @@
             water.rotation.x -= 0.5 * Math.PI;
             scene.add( water );
 
-            camera.position.z = 8;
-            camera.position.y = 2;
-
             animate();
 
             var lastTime = new Date().getTime();
@@ -112,6 +109,10 @@
                 requestAnimationFrame( animate );
                 var currentTime = (new Date().getTime() - lastTime) / 1000;
                 material.uniforms.time.value = currentTime;
+                camera.position.y = 10 + 5*Math.sin(0.5 * currentTime);
+                camera.position.z = 25*Math.cos(0.1 * currentTime);
+                camera.position.x = 25*Math.sin(0.1 * currentTime);
+                camera.lookAt(new THREE.Vector3(0.0,0.0,0.0));
                 renderer.render( scene, camera );
             }
         </script>
