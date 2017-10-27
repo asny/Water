@@ -19,7 +19,7 @@
 
           const float pi = 3.14159;
           const float g = 9.81;
-          const float wavelength = 4.0;
+          const float median_wavelength = 2.0;
           const vec2 wind_direction = normalize(vec2(1.0, 0.5));
 
           varying vec3 nor;
@@ -33,14 +33,31 @@
               pos.y = 0.;
               nor = vec3( 0., 1., 0. );
 
+              float wavelength_var[4];
+              wavelength_var[0] = 0.146;
+              wavelength_var[1] = 0.335;
+              wavelength_var[2] = 0.64632;
+              wavelength_var[3] = 0.73134;
+
+              float direction_var[4];
+              direction_var[0] = 0.821;
+              direction_var[1] = 0.4572;
+              direction_var[2] = 0.014;
+              direction_var[3] = 0.71;
+
               // Offset position
-              for (int i = 0; i < 1; ++i)
+              for (int i = 0; i < 4; ++i)
               {
-                vec2 dir = normalize(wind_direction);
+                float min_wavelength = 0.5 * median_wavelength;
+                float max_wavelength = 2.0 * median_wavelength;
+                float wavelength = mix(min_wavelength, max_wavelength, wavelength_var[i]);
+                float dir_angle = 2.0 * pi * direction_var[i] - pi;
+                vec2 dir = normalize(vec2(wind_direction.x + cos(dir_angle), wind_direction + sin(dir_angle)));
+
                 float frequency = sqrt(g * wavelength / (2.0 * pi));
                 float amplitude = wavelength / 20.0;
-                float steepness = 0.0 * 1.0/(frequency * amplitude);
-                float speed = wavelength / 4.0;
+                float steepness = 0.75 * wavelength_var[i]/(frequency * amplitude);
+                float speed = 1.0;//wavelength / 2.0;
                 float phase = speed * frequency;
 
                 float theta = dot(dir, pos.xz + vec2(100.0, 100.0));
@@ -178,7 +195,7 @@
             {
                 requestAnimationFrame( animate );
                 var currentTime = (new Date().getTime() - lastTime) / 1000;
-                var speed = 0.2;
+                var speed = 0.0;
                 material.uniforms.time.value = currentTime;
                 camera.position.y = 10 + 5*Math.sin(speed * currentTime);
                 camera.position.z = 25*Math.cos(speed * currentTime);
