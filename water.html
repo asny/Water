@@ -18,12 +18,9 @@
           uniform int noWawes;
 
           const float pi = 3.14159;
-          const float amplitude = 0.5;
-          const float wavelength = 1.5 * pi;
-          const float speed = 1.5;
+          const float g = 9.81;
+          const float wavelength = 4.0;
           const vec2 wind_direction = normalize(vec2(1.0, 0.5));
-          const float steepness = 1.0;
-          const float wind_variation = 0.2;
 
           varying vec3 nor;
           varying vec3 pos;
@@ -36,25 +33,21 @@
               pos.y = 0.;
               nor = vec3( 0., 1., 0. );
 
-              float var[2];
-              var[0] = 0.83;
-              var[1] = 0.55;
-              float spe[2];
-              spe[0] = 0.63 * pi;
-              spe[1] = -0.25 * pi;
               // Offset position
-              for (int i = 0; i < 2; ++i)
+              for (int i = 0; i < 1; ++i)
               {
-                vec2 ortho_wind_dir = vec2(-wind_direction.y, wind_direction.x);
-
-                vec2 dir = normalize(wind_direction
-                  + ortho_wind_dir * wind_variation * var[i] * sin(spe[i]));
-                float frequency = 2.0 * pi / wavelength;
+                vec2 dir = normalize(wind_direction);
+                float frequency = sqrt(g * wavelength / (2.0 * pi));
+                float amplitude = wavelength / 20.0;
+                float steepness = 0.0 * 1.0/(frequency * amplitude);
+                float speed = wavelength / 4.0;
                 float phase = speed * frequency;
-                float theta = dot(dir, pos.xz);
+
+                float theta = dot(dir, pos.xz + vec2(100.0, 100.0));
                 float a = theta * frequency + time * phase;
                 float sin_a = sin(a);
                 float cos_a = cos(a);
+
                 pos.y += amplitude * sin_a;
                 pos.x += steepness * amplitude * dir.x * cos_a;
                 pos.z += steepness * amplitude * dir.y * cos_a;
