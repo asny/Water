@@ -76,6 +76,8 @@
           varying vec3 pos;
           varying vec3 cen;
 
+          const float specularPower = 5.0;
+
     			float edgeFactorTri() {
 
     				vec3 d = fwidth( cen.xyz );
@@ -84,12 +86,47 @@
 
     			}
 
+          vec4 calculate_light(vec3 color,
+                               vec3 lightDirection,
+                               vec3 position,
+                               vec3 normal,
+                               float ambientIntensity,
+                               float diffuseIntensity,
+                               float specularIntensity)
+          {
+              vec4 AmbientColor = vec4(color * ambientIntensity, 1.0);
+              float DiffuseFactor = dot(normal, -lightDirection);
+
+              vec4 DiffuseColor  = vec4(0, 0, 0, 0);
+              vec4 SpecularColor = vec4(0, 0, 0, 0);
+
+              if (DiffuseFactor > 0.0)
+              {
+                  DiffuseColor = vec4(color * diffuseIntensity * DiffuseFactor, 1.0);
+
+                  vec3 VertexToEye = normalize(cameraPosition - position);
+                  vec3 lightReflect = normalize(reflect(lightDirection, normal));
+                  float SpecularFactor = dot(VertexToEye, lightReflect);
+                  if (SpecularFactor > 0.0)
+                  {
+                      SpecularFactor = pow(SpecularFactor, specularPower);
+                      SpecularColor = vec4(color * specularIntensity * SpecularFactor, 1.0);
+                  }
+              }
+
+              return AmbientColor + DiffuseColor + SpecularColor;
+          }
+
     			void main() {
 
-            float d = 0.25 + 0.75 * dot(normalize(cameraPosition - pos), nor);
-            gl_FragColor.rgb = mix( vec3( 1.0 ), vec3( 0.2 ), edgeFactorTri() );
-    				//gl_FragColor.rgb = vec3( d, d, d );
+            vec3 normal = normalize(nor);
+            //gl_FragColor.rgb = vec3(-normal.y, normal.y, 0.0 );
+            vec3 lightDirection = normalize(vec3(0.0, -1.0, -1.0));
+            gl_FragColor.rgb = calculate_light(vec3(0.4, 0.5, 0.8), lightDirection, pos, normal, 0.2, 0.6, 0.2).rgb;
+            //gl_FragColor.rgb = mix( vec3( 1.0 ), vec3( 0.2 ), edgeFactorTri() );
     				gl_FragColor.a = 1.0;
+            //float d = 0.25 + 0.75 * dot(normalize(cameraPosition - pos), nor);
+    				//gl_FragColor.rgb = vec3( d, d, d );
     			}
 
     		</script>
