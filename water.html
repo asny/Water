@@ -15,7 +15,9 @@
           attribute vec3 center;
 
           uniform float time;
-          uniform int noWawes;
+
+          const int noWaves = 4;
+          const float _noWaves = 4.0;
 
           const float pi = 3.14159;
           const float g = 9.81;
@@ -33,20 +35,20 @@
               pos.y = 0.;
               nor = vec3( 0., 1., 0. );
 
-              float wavelength_var[4];
+              float wavelength_var[noWaves];
               wavelength_var[0] = 0.146;
               wavelength_var[1] = 0.335;
               wavelength_var[2] = 0.64632;
               wavelength_var[3] = 0.73134;
 
-              float direction_var[4];
+              float direction_var[noWaves];
               direction_var[0] = 0.821;
               direction_var[1] = 0.4572;
               direction_var[2] = 0.014;
               direction_var[3] = 0.71;
 
               // Offset position
-              for (int i = 0; i < 4; ++i)
+              for (int i = 0; i < noWaves; ++i)
               {
                 float min_wavelength = 0.5 * median_wavelength;
                 float max_wavelength = 2.0 * median_wavelength;
@@ -60,7 +62,7 @@
                 float speed = 1.0;//wavelength / 2.0;
                 float phase = speed * frequency;
 
-                float theta = dot(dir, pos.xz + vec2(100.0, 100.0));
+                float theta = dot(dir, pos.xz);
                 float a = theta * frequency + time * phase;
                 float sin_a = sin(a);
                 float cos_a = cos(a);
@@ -153,8 +155,7 @@
 
             var material = new THREE.ShaderMaterial( {
                       uniforms: {
-                        time: { value: 0.1 },
-                        noWawes: new THREE.Uniform(new Number(1))
+                        time: { value: 0.1 }
                       },
             					vertexShader: document.getElementById( 'vertexShader' ).textContent,
             					fragmentShader: document.getElementById( 'fragmentShader' ).textContent
