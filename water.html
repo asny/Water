@@ -60,7 +60,7 @@
                 vec2 dir = normalize(vec2( cos_angle * wind_direction.x - sin_angle * wind_direction.y,
                   sin_angle * wind_direction.x + cos_angle * wind_direction.y));
 
-                float frequency = sqrt(g * wavelength / (2.0 * pi));
+                float frequency = 2.0 * pi / wavelength;//sqrt(g * wavelength / (2.0 * pi));// * tanh(2.0 * pi * waterDepth / wavelength);
                 float amplitude = wavelength / 20.0;
                 float steepness = wavelength_var[i]/(frequency * amplitude * _noWaves);
                 float speed = 1.0;//wavelength / 2.0; // TODO: What should this be?
