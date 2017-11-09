@@ -207,7 +207,7 @@
             {
                 requestAnimationFrame( animate );
                 var currentTime = (new Date().getTime() - lastTime) / 1000;
-                var speed = 0.2;
+                var speed = 0.05;
                 water_material.uniforms.time.value = currentTime;
                 camera.position.y = 10 + 5*Math.sin(speed * currentTime);
                 camera.position.z = 25*Math.cos(speed * currentTime);
