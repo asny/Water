@@ -154,6 +154,16 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
+            // BACKGROUND
+            /*var background_geometry = new THREE.BufferGeometry().fromGeometry(new THREE.PlaneGeometry(100, 100, 2, 2));
+            var background_material =  new THREE.MeshBasicMaterial( {
+  						color: new THREE.Color( 0.3, 0.3, 0.7 ),
+  						depthTest: false,
+  						depthWrite: false
+  					} );
+            var background = new THREE.Mesh( background_geometry, background_material );
+            scene.add( background );*/
+
             // WATER
             var water_geometry = new THREE.BufferGeometry().fromGeometry(new THREE.PlaneGeometry(48, 48, 100, 100));
             setupAttributes( water_geometry );
